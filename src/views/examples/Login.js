@@ -31,7 +31,7 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import axios from "axios";
+import api from "components/api";
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
@@ -45,13 +45,11 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:8888/api/authentication/login",
-        {
-          username,
-          password,
-        }
-      );
+      debugger;
+      const response = await api.post("authentication/login", {
+        username,
+        password,
+      });
       debugger;
       const { jwt, passwordNeedsToBeChanged } = response.data;
 

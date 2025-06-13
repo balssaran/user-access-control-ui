@@ -31,23 +31,10 @@ var routes = [
     component: Index,
     layout: "/admin",
   },
+
   {
-    path: "/icons",
-    name: "Icons",
-    icon: "ni ni-planet text-blue",
-    component: Icons,
-    layout: "/admin",
-  },
-  {
-    path: "/maps",
-    name: "Maps",
-    icon: "ni ni-pin-3 text-orange",
-    component: Maps,
-    layout: "/admin",
-  },
-  {
-    path: "/user-profile",
-    name: "User Profile",
+    path: "/usercreation",
+    name: "User Creation",
     icon: "ni ni-single-02 text-yellow",
     component: Profile,
     layout: "/admin",
@@ -65,6 +52,7 @@ var routes = [
     icon: "ni ni-key-25 text-info",
     component: <Login />,
     layout: "/auth",
+    invisible: true,
   },
   {
     path: "/register",
