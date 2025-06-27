@@ -46,7 +46,11 @@ const Auth = (props) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/auth") {
         return (
-          <Route path={prop.path} element={prop.component} key={key} exact />
+          <Route
+            path={prop.path}
+            element={<prop.component />} // <--- Note the JSX usage here
+            key={key}
+          />
         );
       } else {
         return null;

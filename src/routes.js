@@ -16,12 +16,11 @@
 
 */
 import Index from "views/Index.js";
-import Profile from "views/examples/Profile.js";
-import Maps from "views/examples/Maps.js";
+import User from "views/examples/User.js";
+import RoleMenu from "views/examples/RoleMenu.js";
 import Register from "views/examples/Register.js";
 import Login from "views/examples/Login.js";
-import Tables from "views/examples/Tables.js";
-import Icons from "views/examples/Icons.js";
+import Menu from "views/examples/Menu.js";
 
 var routes = [
   {
@@ -36,29 +35,28 @@ var routes = [
     path: "/usercreation",
     name: "User Creation",
     icon: "ni ni-single-02 text-yellow",
-    component: Profile,
+    component: User,
     layout: "/admin",
   },
   {
-    path: "/tables",
-    name: "Tables",
+    path: "/menu",
+    name: "Menu",
     icon: "ni ni-bullet-list-67 text-red",
-    component: Tables,
+    component: Menu,
+    layout: "/admin",
+  },
+  {
+    path: "/rolemenu",
+    name: "Role Menu Mappng",
+    icon: "ni ni-bullet-list-67 text-red",
+    component: RoleMenu,
     layout: "/admin",
   },
   {
     path: "/login",
     name: "Login",
-    icon: "ni ni-key-25 text-info",
-    component: <Login />,
-    layout: "/auth",
-    invisible: true,
-  },
-  {
-    path: "/register",
-    name: "Register",
-    icon: "ni ni-circle-08 text-pink",
-    component: <Register />,
+    icon: "ni ni-bullet-list-67 text-red",
+    component: Login,
     layout: "/auth",
   },
 ];

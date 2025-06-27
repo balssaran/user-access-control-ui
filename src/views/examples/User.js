@@ -51,11 +51,12 @@ import { jwtDecode } from "jwt-decode";
 import UserHeader from "components/Headers/Header.js";
 import api from "components/api";
 
-const Profile = () => {
+const User = () => {
   const [currentPage, setCurrentPage] = useState(1); // 1-based for UI
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+  const [errors, setErrors] = useState({});
 
   // const initialFormData = useState({
   //   userId: null, // 👈 Add this line
@@ -79,7 +80,7 @@ const Profile = () => {
     lastname: "",
     email: "",
     role: { id: null, name: "" },
-    branch: { id: null, name: "" },
+    branch: null,
     gender: "",
     enabled: true,
     mfaEnabled: false,
@@ -196,7 +197,34 @@ const Profile = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    debugger;
     const token = localStorage.getItem("token");
+    const newErrors = {};
+
+    if (!formData.username || formData.username.trim() === "") {
+      newErrors.username = "Username is required.";
+    }
+    if (!formData.email || formData.email.trim() === "") {
+      newErrors.email = "Email is required.";
+    }
+    if (!formData.firstname || formData.firstname.trim() === "") {
+      newErrors.firstname = "Firstname is required.";
+    }
+    if (!formData.lastname || formData.lastname.trim() === "") {
+      newErrors.lastname = "Lastname is required.";
+    }
+    if (!formData.role?.id) {
+      newErrors.role = "Role is required.";
+    }
+    if (!formData.gender || formData.gender.trim() === "") {
+      newErrors.gender = "Gender is required.";
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({}); // clear previous errors
 
     if (token) {
       debugger;
@@ -276,8 +304,11 @@ const Profile = () => {
                       <Col lg="6">
                         <FormGroup>
                           <Label htmlFor="input-username">Username</Label>
+                          <span style={{ color: "red" }}>*</span>
                           <Input
-                            className="form-control-alternative"
+                            className={`form-control-alternative ${
+                              errors.username ? "is-invalid" : ""
+                            }`}
                             id="input-username"
                             placeholder="Username"
                             type="text"
@@ -289,13 +320,24 @@ const Profile = () => {
                               })
                             }
                           />
+                          {errors.username && (
+                            <div
+                              className="invalid-feedback"
+                              style={{ display: "block" }}
+                            >
+                              {errors.username}
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                       <Col lg="6">
                         <FormGroup>
                           <Label htmlFor="input-email">Email</Label>
+                          <span style={{ color: "red" }}>*</span>
                           <Input
-                            className="form-control-alternative"
+                            className={`form-control-alternative ${
+                              errors.email ? "is-invalid" : ""
+                            }`}
                             id="input-email"
                             placeholder="Email"
                             type="email"
@@ -307,6 +349,14 @@ const Profile = () => {
                               })
                             }
                           />
+                          {errors.email && (
+                            <div
+                              className="invalid-feedback"
+                              style={{ display: "block" }}
+                            >
+                              {errors.email}
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -314,8 +364,11 @@ const Profile = () => {
                       <Col lg="6">
                         <FormGroup>
                           <Label htmlFor="input-first-name">First Name</Label>
+                          <span style={{ color: "red" }}>*</span>
                           <Input
-                            className="form-control-alternative"
+                            className={`form-control-alternative ${
+                              errors.firstname ? "is-invalid" : ""
+                            }`}
                             id="input-first-name"
                             placeholder="First Name"
                             type="text"
@@ -327,13 +380,24 @@ const Profile = () => {
                               })
                             }
                           />
+                          {errors.firstname && (
+                            <div
+                              className="invalid-feedback"
+                              style={{ display: "block" }}
+                            >
+                              {errors.firstname}
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                       <Col lg="6">
                         <FormGroup>
                           <Label htmlFor="input-last-name">Last Name</Label>
+                          <span style={{ color: "red" }}>*</span>
                           <Input
-                            className="form-control-alternative"
+                            className={`form-control-alternative ${
+                              errors.lastname ? "is-invalid" : ""
+                            }`}
                             id="input-last-name"
                             placeholder="Last Name"
                             type="text"
@@ -345,6 +409,14 @@ const Profile = () => {
                               })
                             }
                           />
+                          {errors.lastname && (
+                            <div
+                              className="invalid-feedback"
+                              style={{ display: "block" }}
+                            >
+                              {errors.lastname}
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -352,27 +424,44 @@ const Profile = () => {
                       <Col lg="6">
                         <FormGroup>
                           <Label htmlFor="input-role">Role</Label>
+                          <span style={{ color: "red" }}>*</span>
                           <Input
                             type="select"
-                            value={JSON.stringify(formData.role)}
+                            className={`${errors.role ? "is-invalid" : ""}`}
+                            value={formData.role?.id || ""}
                             onChange={(e) => {
-                              const selectedRole = JSON.parse(e.target.value);
-                              setFormData({
-                                ...formData,
-                                role: selectedRole,
-                              });
+                              const selectedId = e.target.value;
+                              if (!selectedId) {
+                                setFormData({
+                                  ...formData,
+                                  role: null, // no role selected
+                                });
+                              } else {
+                                const selectedRole = roleList.find(
+                                  (b) => b.id === parseInt(selectedId, 10)
+                                );
+                                setFormData({
+                                  ...formData,
+                                  role: selectedRole,
+                                });
+                              }
                             }}
                           >
                             <option value="">Select Role</option>
                             {roleList.map((role) => (
-                              <option
-                                key={role.id}
-                                value={JSON.stringify(role)}
-                              >
+                              <option key={role.id} value={role.id}>
                                 {role.name}
                               </option>
                             ))}
                           </Input>
+                          {errors.role && (
+                            <div
+                              className="invalid-feedback"
+                              style={{ display: "block" }}
+                            >
+                              {errors.role}
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                       <Col lg="6">
@@ -380,21 +469,28 @@ const Profile = () => {
                           <Label htmlFor="input-branch">Branch</Label>
                           <Input
                             type="select"
-                            value={JSON.stringify(formData.branch)}
+                            value={formData.branch?.id || ""}
                             onChange={(e) => {
-                              const selectedBranch = JSON.parse(e.target.value);
-                              setFormData({
-                                ...formData,
-                                branch: selectedBranch,
-                              });
+                              const selectedId = e.target.value;
+                              if (!selectedId) {
+                                setFormData({
+                                  ...formData,
+                                  branch: null, // no branch selected
+                                });
+                              } else {
+                                const selectedBranch = branchList.find(
+                                  (b) => b.id === parseInt(selectedId, 10)
+                                );
+                                setFormData({
+                                  ...formData,
+                                  branch: selectedBranch,
+                                });
+                              }
                             }}
                           >
                             <option value="">Select Branch</option>
                             {branchList.map((branch) => (
-                              <option
-                                key={branch.id}
-                                value={JSON.stringify(branch)}
-                              >
+                              <option key={branch.id} value={branch.id}>
                                 {branch.name}
                               </option>
                             ))}
@@ -406,7 +502,9 @@ const Profile = () => {
                       <Col lg="6">
                         <FormGroup>
                           <Label htmlFor="input-gender">Gender</Label>
+                          <span style={{ color: "red" }}>*</span>
                           <Input
+                            className={`${errors.gender ? "is-invalid" : ""}`}
                             type="select"
                             id="input-gender"
                             value={formData.gender}
@@ -422,6 +520,14 @@ const Profile = () => {
                             <option value="F">Female</option>
                             <option value="O">Other</option>
                           </Input>
+                          {errors.gender && (
+                            <div
+                              className="invalid-feedback"
+                              style={{ display: "block" }}
+                            >
+                              {errors.gender}
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
 
@@ -523,7 +629,7 @@ const Profile = () => {
                                   <td>{user.firstname}</td>
                                   <td>{user.lastname}</td>
                                   <td>{user.role.name}</td>
-                                  <td>{user.branch.name}</td>
+                                  <td>{user.branch ? user.branch.name : ""}</td>
                                   <td>
                                     <Button
                                       color="info"
@@ -622,4 +728,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default User;
